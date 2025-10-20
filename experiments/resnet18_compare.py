@@ -176,7 +176,7 @@ from muon import Muon
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from optimizers.adamw_wrapper import AdamWWrapper
 from optimizers.dynamo import BiostatisV2, TargetedDynamo
-from optimizers.dynamo import DynamoV2, DynamoV2Adaptive, DynamoV2AdaptiveSimple, DynamoV3, BiostatisV2, DynamoGrok, BiostatisV3, BiostatisV4
+from optimizers.dynamo import BiostatisV2, DynamoGrok, BiostatisV3, BiostatisV4, BiostatisV5
 from gpu_monitor import start_gpu_monitor
 from torch.optim import RAdam
 from optimizers.muon import SingleDeviceMuon
@@ -197,6 +197,7 @@ def create_muon_optimizer(model, lr=0.02, momentum=0.95, weight_decay=0, **kwarg
 # Training utility
 # ---------------------
 def train_and_eval(optimizer_name, optimizer_class, trainloader, testloader, device, epochs=3, **optimizer_kwargs):
+    import time
     # ResNet18 backbone
     model = torchvision.models.resnet18(weights=None)
     model.fc = nn.Linear(model.fc.in_features, 10)  # CIFAR10 has 10 classes
@@ -211,11 +212,18 @@ def train_and_eval(optimizer_name, optimizer_class, trainloader, testloader, dev
         optimizer = optimizer_class(model.parameters(), **optimizer_kwargs)
 
     train_losses, test_accs = [], []
+    epoch_times = []
+    total_start = time.perf_counter()
 
     for epoch in range(epochs):
         # train
         model.train()
         running_loss = 0
+        # for accurate GPU timing
+        if device.type == "cuda":
+            torch.cuda.synchronize()
+        epoch_start = time.perf_counter()
+        num_train_samples = 0
         for inputs, labels in trainloader:
             inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
@@ -236,7 +244,13 @@ def train_and_eval(optimizer_name, optimizer_class, trainloader, testloader, dev
                 optimizer.step()
             
             running_loss += loss.item()
+            num_train_samples += inputs.size(0)
 
+        # end epoch timing
+        if device.type == "cuda":
+            torch.cuda.synchronize()
+        epoch_time = time.perf_counter() - epoch_start
+        epoch_times.append(epoch_time)
         train_losses.append(running_loss / len(trainloader))
 
         # test
@@ -251,9 +265,15 @@ def train_and_eval(optimizer_name, optimizer_class, trainloader, testloader, dev
                 correct += (predicted == labels).sum().item()
 
         test_accs.append(100 * correct / total)
-        print(f"{optimizer_name} | Epoch {epoch+1}: Loss={train_losses[-1]:.4f}, Acc={test_accs[-1]:.2f}%")
-
-    return train_losses, test_accs, model
+        imgs_per_sec = num_train_samples / epoch_time if epoch_time > 0 else float('inf')
+        print(f"{optimizer_name} | Epoch {epoch+1}: Loss={train_losses[-1]:.4f}, Acc={test_accs[-1]:.2f}% | Time={epoch_time:.2f}s | Throughput={imgs_per_sec:.1f} img/s")
+    total_time = time.perf_counter() - total_start
+    timing_stats = {
+        "epoch_times": epoch_times,
+        "avg_epoch_time": sum(epoch_times) / len(epoch_times) if epoch_times else 0.0,
+        "total_time": total_time,
+    }
+    return train_losses, test_accs, model, timing_stats
 
 # ---------------------
 # Spectral analysis
@@ -383,6 +403,14 @@ def main():
             "energy_target": 1e-4,
             "lambda_energy": 0.1
         }),
+        ("BiostatisV5", BiostatisV5,{
+            "lr": 1e-3,
+            "weight_decay": 1e-2,
+            "homeo_rate": 0.5,
+            "coherence_target": 0.8,
+            "energy_target": 1e-4,
+            "lambda_energy": 0.1
+        }),
 
         ("RAdam", RAdam, {
             "lr": 2e-4, 
@@ -400,8 +428,8 @@ def main():
             # Start GPU monitor
             gpu_thread = start_gpu_monitor(name, interval=5)
 
-            losses, accs, model = train_and_eval(name, opt_class, trainloader, testloader, device, epochs=5, **opt_kwargs)
-            results[name] = (losses, accs)
+            losses, accs, model, timing = train_and_eval(name, opt_class, trainloader, testloader, device, epochs=5, **opt_kwargs)
+            results[name] = (losses, accs, timing)
 
             # Save checkpoint and compute singular spectrum
             os.makedirs("results/cifar10_resnet", exist_ok=True)
@@ -418,7 +446,7 @@ def main():
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     
     # Plot 1: Test Accuracy
-    for name, (losses, accs) in results.items():
+    for name, (losses, accs, timing) in results.items():
         axes[0, 0].plot(accs, label=name, marker='o', linewidth=2)
     axes[0, 0].set_xlabel("Epoch")
     axes[0, 0].set_ylabel("Test Accuracy (%)")
@@ -427,7 +455,7 @@ def main():
     axes[0, 0].grid(True, alpha=0.3)
     
     # Plot 2: Training Loss
-    for name, (losses, accs) in results.items():
+    for name, (losses, accs, timing) in results.items():
         axes[0, 1].plot(losses, label=name, marker='s', linewidth=2)
     axes[0, 1].set_xlabel("Epoch")
     axes[0, 1].set_ylabel("Training Loss")
@@ -467,13 +495,30 @@ def main():
     print("FINAL RESULTS SUMMARY")
     print(f"{'='*60}")
     
-    for name, (losses, accs) in results.items():
+    for name, (losses, accs, timing) in results.items():
         final_loss = losses[-1]
         final_acc = accs[-1]
         best_acc = max(accs)
         best_epoch = accs.index(best_acc) + 1
-        
-        print(f"{name:15} | Final: {final_acc:6.2f}% | Best: {best_acc:6.2f}% (Epoch {best_epoch})")
+        avg_epoch = timing.get("avg_epoch_time", 0.0)
+        total_time = timing.get("total_time", 0.0)
+        print(f"{name:15} | Final: {final_acc:6.2f}% | Best: {best_acc:6.2f}% (Epoch {best_epoch}) | Avg epoch: {avg_epoch:6.2f}s | Total: {total_time:7.2f}s")
+
+    # Speed comparison plot (avg epoch time)
+    try:
+        speed_names = list(results.keys())
+        avg_epoch_times = [results[n][2]["avg_epoch_time"] for n in speed_names]
+        plt.figure(figsize=(6,4))
+        plt.bar(speed_names, avg_epoch_times, alpha=0.8)
+        plt.ylabel("Avg Epoch Time (s)")
+        plt.title("Optimizer Speed Comparison (ResNet18 CIFAR-10)")
+        plt.grid(True, axis='y', alpha=0.3)
+        plt.tight_layout()
+        os.makedirs("results/cifar10_resnet", exist_ok=True)
+        plt.savefig("results/cifar10_resnet/speed_comparison.png", dpi=300, bbox_inches='tight')
+        plt.close()
+    except Exception as e:
+        print(f"Could not create speed plot: {e}")
     
     print(f"{'='*60}")
     
