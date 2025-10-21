@@ -13,7 +13,7 @@ batch_size = 16
 context_size = 32
 max_iters = 20000
 eval_interval = 200
-learning_rate = 1e-3
+learning_rate = 2e-3
 eval_iters = 300
 n_embd = 64
 n_head = 4
@@ -33,7 +33,7 @@ class BiostatisV5(torch.optim.Optimizer):
 
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999),
                  eps=1e-8, weight_decay=1e-2,
-                 homeo_rate=0.05, coherence_target=0.8,
+                 homeo_rate=0.03, coherence_target=0.8,
                  energy_target=1e-3, lambda_energy=0.1,
                  memory_decays=(0.9, 0.95, 0.99),
                  memory_weights=(0.5, 0.3, 0.2),
@@ -203,6 +203,113 @@ def estimate_loss():
     model.train()
     return out
 
+@torch.no_grad()
+def compute_perplexity(model, split="val"):
+    """
+    Corpus-level perplexity computation that matches the training loss.
+    Computes perplexity across all tokens in the dataset.
+    """
+    model.eval()
+    total_log_likelihood = 0.0
+    total_tokens = 0
+
+    for _ in range(eval_iters):
+        x, y = get_batch(split)
+        
+        # Forward pass - returns flattened logits (B*T, vocab_size)
+        logits, _ = model(x, y)
+        
+        # Get log probabilities
+        log_probs = F.log_softmax(logits, dim=-1)
+        
+        # Flatten targets to match logits shape
+        targets = y.view(-1)
+        
+        # Gather log probabilities for the true tokens
+        target_log_probs = log_probs.gather(dim=-1, index=targets.unsqueeze(-1)).squeeze(-1)
+        
+        # Accumulate
+        total_log_likelihood += target_log_probs.sum().item()
+        total_tokens += targets.numel()
+
+    # Compute perplexity
+    mean_log_likelihood = total_log_likelihood / total_tokens
+    perplexity = math.exp(-mean_log_likelihood)
+
+    model.train()
+    return perplexity
+
+
+@torch.no_grad()
+def compute_perplexity_per_sequence(model, split="val"):
+    """
+    Per-sequence perplexity computation (like the article approach).
+    Computes perplexity for each sequence, then averages.
+    Better for variable-length sequences.
+    """
+    model.eval()
+    all_perplexities = []
+
+    for _ in range(eval_iters):
+        x, y = get_batch(split)
+        B, T = y.shape
+        
+        # Forward pass
+        logits, _ = model(x, y)
+        logits = logits.view(B, T, -1)
+        
+        # Compute log probabilities
+        log_probs = F.log_softmax(logits, dim=-1)
+        
+        # Gather target log probs
+        target_log_probs = log_probs.gather(dim=-1, index=y.unsqueeze(-1)).squeeze(-1)
+        
+        # Per-sequence negative log likelihood
+        nll_per_seq = -target_log_probs.sum(dim=-1) / T  # Average per sequence
+        
+        # Per-sequence perplexity
+        perplexities = torch.exp(nll_per_seq)
+        all_perplexities.append(perplexities)
+
+    # Mean across all sequences
+    mean_perplexity = torch.cat(all_perplexities).mean().item()
+
+    model.train()
+    return mean_perplexity
+
+
+def evaluate_model(model):
+    """
+    Runs evaluation for both train and val splits using both perplexity methods.
+    Returns: dict with perplexity metrics
+    """
+    # Corpus-level perplexity
+    train_ppl = compute_perplexity(model, split="train")
+    val_ppl = compute_perplexity(model, split="val")
+    
+    # Per-sequence perplexity
+    train_ppl_seq = compute_perplexity_per_sequence(model, split="train")
+    val_ppl_seq = compute_perplexity_per_sequence(model, split="val")
+
+    print("\n" + "="*60)
+    print("PERPLEXITY EVALUATION")
+    print("="*60)
+    print("Corpus-Level Perplexity:")
+    print(f"  Train: {train_ppl:.4f}")
+    print(f"  Val:   {val_ppl:.4f}")
+    print("\nPer-Sequence Perplexity (Article Method):")
+    print(f"  Train: {train_ppl_seq:.4f}")
+    print(f"  Val:   {val_ppl_seq:.4f}")
+    print("="*60 + "\n")
+
+    return {
+        "train_ppl": train_ppl, 
+        "val_ppl": val_ppl,
+        "train_ppl_seq": train_ppl_seq,
+        "val_ppl_seq": val_ppl_seq
+    }
+
+    
 # ========================================
 # MODEL ARCHITECTURE
 # ========================================
@@ -323,14 +430,14 @@ print(f"Model parameters: {sum(p.numel() for p in model.parameters())/1e6:.2f}M"
 optimizer = BiostatisV5(
     model.parameters(),
     lr=learning_rate,
-    weight_decay=1e-2,
-    homeo_rate=0.05,
-    coherence_target=0.8,
-    energy_target=1e-3,
-    lambda_energy=0.1,
+    weight_decay=0.05,
+    homeo_rate=0.03,
+    coherence_target=0.85,
+    energy_target=0.0005,
+    lambda_energy=0.5,
     memory_decays=(0.9, 0.95, 0.99),
     memory_weights=(0.5, 0.3, 0.2),
-    flip_threshold=0.2,
+    flip_threshold=0.15,
     ascent_strength=0.05
 )
 
@@ -343,7 +450,11 @@ print(f"Batch size: {batch_size}, Context size: {context_size}\n")
 for iter in range(max_iters):
     if iter % eval_interval == 0 or iter == max_iters - 1:
         losses = estimate_loss()
-        print(f"step {iter:5d}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+        train_ppl = compute_perplexity(model, split="train")
+        val_ppl = compute_perplexity(model, split="val")
+        print(f"step {iter:5d}: "
+              f"train loss {losses['train']:.4f} (ppl={train_ppl:.2f}), "
+              f"val loss {losses['val']:.4f} (ppl={val_ppl:.2f})")
 
     xb, yb = get_batch('train')
     logits, loss = model(xb, yb)
@@ -354,6 +465,9 @@ for iter in range(max_iters):
 print("\n" + "="*60)
 print("Training Complete!")
 print("="*60)
+
+# Final comprehensive evaluation
+final_metrics = evaluate_model(model)
 
 # ========================================
 # GENERATION
@@ -367,3 +481,14 @@ print("Generated Text:")
 print("-" * 60)
 print(generated_text)
 print("-" * 60)
+
+# Save model
+torch.save({
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'final_train_loss': losses['train'],
+    'final_val_loss': losses['val'],
+    'final_metrics': final_metrics
+}, 'gpt1_biostatisv5.pth')
+
+print("\nModel saved as 'gpt1_biostatisv5.pth'")
