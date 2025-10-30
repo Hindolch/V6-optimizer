@@ -175,22 +175,21 @@ from muon import Muon
 # Your custom optimizers
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from optimizers.adamw_wrapper import AdamWWrapper
-from optimizers.dynamo import BiostatisV2, TargetedDynamo
-from optimizers.dynamo import BiostatisV2, DynamoGrok, BiostatisV3, BiostatisV4, BiostatisV5
+from optimizers.dynamo import BiostatisV2, DynamoGrok, BiostatisV3, BiostatisV4, BiostatisV5, BiostatisV6, BiostatisV5_1
 from gpu_monitor import start_gpu_monitor
-from torch.optim import RAdam
-from optimizers.muon import SingleDeviceMuon
+#from torch.optim import RAdam
+#from optimizers.muon import SingleDeviceMuon
 
 # ---------------------
 # Muon wrapper for ResNet18
 # ---------------------
-def create_muon_optimizer(model, lr=0.02, momentum=0.95, weight_decay=0, **kwargs):
-    """Create Muon optimizer for ResNet18 (single device)."""
-    # Filter parameters: only use 2D+ parameters for Muon
-    # According to the docstring, only hidden weight layers should use Muon
-    muon_params = [p for p in model.parameters() if p.ndim >= 2]
+# def create_muon_optimizer(model, lr=0.02, momentum=0.95, weight_decay=0, **kwargs):
+#     """Create Muon optimizer for ResNet18 (single device)."""
+#     # Filter parameters: only use 2D+ parameters for Muon
+#     # According to the docstring, only hidden weight layers should use Muon
+#     muon_params = [p for p in model.parameters() if p.ndim >= 2]
     
-    return SingleDeviceMuon(muon_params, lr=lr, momentum=momentum, weight_decay=weight_decay)
+#     return SingleDeviceMuon(muon_params, lr=lr, momentum=momentum, weight_decay=weight_decay)
 
 
 # ---------------------
@@ -207,7 +206,7 @@ def train_and_eval(optimizer_name, optimizer_class, trainloader, testloader, dev
     
     # Special handling for Muon optimizer
     if optimizer_name == "Muon":
-        optimizer = create_muon_optimizer(model, **optimizer_kwargs)
+        optimizer = create_muon_optimizer(model, **optimizer_kwargs)  # pyright: ignore[reportUndefinedVariable]
     else:
         optimizer = optimizer_class(model.parameters(), **optimizer_kwargs)
 
@@ -395,14 +394,14 @@ def main():
         #     "energy_target": 1e-4,
         #     "lambda_energy": 0.1
         # }),
-        ("BiostatisV4", BiostatisV4,{
-            "lr": 1e-3,
-            "weight_decay": 1e-2,
-            "homeo_rate": 0.5,
-            "coherence_target": 0.8,
-            "energy_target": 1e-4,
-            "lambda_energy": 0.1
-        }),
+        # ("BiostatisV4", BiostatisV4,{
+        #     "lr": 1e-3,
+        #     "weight_decay": 1e-2,
+        #     "homeo_rate": 0.5,
+        #     "coherence_target": 0.8,
+        #     "energy_target": 1e-4,
+        #     "lambda_energy": 0.1
+        # }),
         ("BiostatisV5", BiostatisV5,{
             "lr": 1e-3,
             "weight_decay": 1e-2,
@@ -411,12 +410,23 @@ def main():
             "energy_target": 1e-4,
             "lambda_energy": 0.1
         }),
-
-        ("RAdam", RAdam, {
-            "lr": 2e-4, 
+        ("BiostatisV5.1", BiostatisV5_1,{
+            "lr": 1e-3,
             "weight_decay": 1e-2,
-            "decoupled_weight_decay": True
+            "homeo_rate": 0.5,
+            "coherence_target": 0.8,
+            "energy_target": 1e-4,
+            "lambda_energy": 0.1
         }),
+        ("BiostatisV6", BiostatisV6,{
+            "lr": 1e-3,
+            "weight_decay": 1e-2,
+            "homeo_rate": 0.5,
+            "coherence_target": 0.8,
+            "energy_target": 1e-4,
+            "lambda_energy": 0.1
+        }),
+
                
     ]
 

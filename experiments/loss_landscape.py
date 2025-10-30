@@ -13,8 +13,7 @@ import seaborn as sns
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from optimizers.adamw_wrapper import AdamWWrapper
-from optimizers.dynamo import BiostatisV4, BiostatisV5
-from torch.optim import RAdam
+from optimizers.dynamo import BiostatisV6
 
 class LossLandscapeVisualizer:
     """
@@ -223,10 +222,8 @@ class LossLandscapeVisualizer:
         # Define optimizers and their checkpoints
         optimizers = {
             "AdamW": os.path.join(checkpoint_dir, "adamw_resnet18.pth"),
-            "BiostatisV4": os.path.join(checkpoint_dir, "biostatisv4_resnet18.pth"),
-            "BiostatisV5": os.path.join(checkpoint_dir, "biostatisv5_resnet18.pth"),
-            "RAdam": os.path.join(checkpoint_dir, "radam_resnet18.pth"),
-        }
+            "BiostatisV6": os.path.join(checkpoint_dir, "biostatisv6_resnet18.pth"),
+            }
         
         # Check which checkpoints exist
         available_optimizers = {}
