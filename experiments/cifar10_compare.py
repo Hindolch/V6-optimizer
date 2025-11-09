@@ -9,8 +9,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from optimizers.adamw_wrapper import AdamWWrapper
-from optimizers.lion import Lion
-from optimizers.dynamo import Dynamo
+from optimizers.biostatis import BiostatisV6
 
 
 #---------------------
@@ -96,8 +95,7 @@ def main():
 
     for name, opt in [
         ("AdamW", AdamWWrapper),
-        ("Lion", Lion),
-        ("Dynamo", Dynamo),
+        ("BiostatisV6", BiostatisV6),
     ]:
         print(f"\n===== Training with {name} =====")
         losses, accs = train_and_eval(name, opt, trainloader, testloader, device)

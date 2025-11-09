@@ -30,7 +30,7 @@ from torch.optim.optimizer import Optimizer
 
 # Ensure project root is importable for optimizer modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from optimizers.dynamo import BiostatisV6
+from optimizers.biostatis import BiostatisV6
 
 
 
