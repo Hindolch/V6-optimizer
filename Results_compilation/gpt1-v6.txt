@@ -1,0 +1,199 @@
+============================================================
+GPT-1 Training with BiostatisV6 Optimizer
+============================================================
+Model parameters: 6.68M
+
+Optimizer: BiostatisV6
+Learning rate: 0.002
+Training iterations: 20000
+Batch size: 16, Context size: 32
+
+step     0: train loss 10.9975 (ppl=59892.98), val loss 11.0111 (ppl=60499.31)
+step   200: train loss 5.7327 (ppl=313.27), val loss 5.9728 (ppl=389.84)
+step   400: train loss 5.0566 (ppl=157.71), val loss 5.3545 (ppl=215.84)
+step   600: train loss 4.7485 (ppl=115.48), val loss 5.2060 (ppl=179.09)
+step   800: train loss 4.5857 (ppl=96.40), val loss 5.0590 (ppl=152.22)
+step  1000: train loss 4.4559 (ppl=83.75), val loss 4.9861 (ppl=145.74)
+step  1200: train loss 4.3479 (ppl=77.65), val loss 4.9435 (ppl=138.26)
+step  1400: train loss 4.2758 (ppl=70.03), val loss 4.9028 (ppl=134.52)
+step  1600: train loss 4.1822 (ppl=64.14), val loss 4.8549 (ppl=129.27)
+step  1800: train loss 4.1204 (ppl=60.56), val loss 4.8579 (ppl=128.68)
+step  2000: train loss 4.0635 (ppl=58.76), val loss 4.8771 (ppl=127.97)
+step  2200: train loss 4.0247 (ppl=55.80), val loss 4.8621 (ppl=126.09)
+step  2400: train loss 3.9532 (ppl=51.48), val loss 4.8143 (ppl=124.35)
+step  2600: train loss 3.9089 (ppl=50.07), val loss 4.8288 (ppl=127.30)
+step  2800: train loss 3.8815 (ppl=47.66), val loss 4.8518 (ppl=128.93)
+step  3000: train loss 3.8427 (ppl=45.23), val loss 4.8663 (ppl=128.27)
+step  3200: train loss 3.8132 (ppl=44.23), val loss 4.8611 (ppl=125.37)
+step  3400: train loss 3.7698 (ppl=42.00), val loss 4.8385 (ppl=130.99)
+step  3600: train loss 3.7277 (ppl=41.94), val loss 4.8159 (ppl=127.98)
+step  3800: train loss 3.7162 (ppl=40.05), val loss 4.8464 (ppl=125.03)
+step  4000: train loss 3.6812 (ppl=39.51), val loss 4.9198 (ppl=133.95)
+step  4200: train loss 3.6557 (ppl=38.22), val loss 4.8591 (ppl=129.21)
+step  4400: train loss 3.6284 (ppl=37.66), val loss 4.9053 (ppl=134.14)
+step  4600: train loss 3.6029 (ppl=36.30), val loss 4.8921 (ppl=136.35)
+step  4800: train loss 3.5660 (ppl=35.88), val loss 4.9270 (ppl=134.94)
+step  5000: train loss 3.5600 (ppl=34.98), val loss 4.9187 (ppl=137.83)
+step  5200: train loss 3.4961 (ppl=34.27), val loss 4.8801 (ppl=137.17)
+step  5400: train loss 3.4932 (ppl=32.95), val loss 4.9239 (ppl=132.73)
+step  5600: train loss 3.4696 (ppl=31.39), val loss 4.9270 (ppl=133.91)
+step  5800: train loss 3.4441 (ppl=31.30), val loss 4.9299 (ppl=140.89)
+step  6000: train loss 3.4320 (ppl=30.84), val loss 4.9678 (ppl=146.32)
+step  6200: train loss 3.4002 (ppl=30.76), val loss 4.9672 (ppl=145.65)
+step  6400: train loss 3.3865 (ppl=29.22), val loss 4.9419 (ppl=145.01)
+step  6600: train loss 3.3637 (ppl=29.31), val loss 4.9756 (ppl=145.90)
+step  6800: train loss 3.3603 (ppl=28.86), val loss 5.0231 (ppl=153.38)
+step  7000: train loss 3.3377 (ppl=27.56), val loss 4.9812 (ppl=146.55)
+step  7200: train loss 3.3191 (ppl=27.30), val loss 5.0147 (ppl=154.87)
+step  7400: train loss 3.2889 (ppl=26.45), val loss 5.0465 (ppl=152.82)
+step  7600: train loss 3.2678 (ppl=26.53), val loss 5.0005 (ppl=150.76)
+step  7800: train loss 3.2235 (ppl=25.69), val loss 4.9993 (ppl=154.22)
+step  8000: train loss 3.2334 (ppl=25.06), val loss 5.0474 (ppl=155.68)
+step  8200: train loss 3.2336 (ppl=25.70), val loss 5.1110 (ppl=164.00)
+step  8400: train loss 3.2033 (ppl=24.39), val loss 5.0587 (ppl=155.14)
+step  8600: train loss 3.2015 (ppl=23.79), val loss 5.0991 (ppl=169.40)
+step  8800: train loss 3.1706 (ppl=23.61), val loss 5.1144 (ppl=163.44)
+step  9000: train loss 3.1462 (ppl=23.33), val loss 5.1254 (ppl=172.95)
+step  9200: train loss 3.1431 (ppl=23.26), val loss 5.1618 (ppl=171.99)
+step  9400: train loss 3.1103 (ppl=22.67), val loss 5.1126 (ppl=168.49)
+step  9600: train loss 3.1104 (ppl=22.74), val loss 5.1506 (ppl=179.37)
+step  9800: train loss 3.1064 (ppl=22.12), val loss 5.1600 (ppl=181.26)
+step 10000: train loss 3.1037 (ppl=21.70), val loss 5.1744 (ppl=173.73)
+step 10200: train loss 3.0787 (ppl=21.61), val loss 5.1644 (ppl=169.78)
+step 10400: train loss 3.0468 (ppl=21.01), val loss 5.1929 (ppl=181.97)
+step 10600: train loss 3.0228 (ppl=20.24), val loss 5.1478 (ppl=173.21)
+step 10800: train loss 3.0444 (ppl=20.54), val loss 5.1818 (ppl=182.57)
+step 11000: train loss 3.0264 (ppl=20.45), val loss 5.2315 (ppl=183.53)
+step 11200: train loss 2.9874 (ppl=20.17), val loss 5.2156 (ppl=190.89)
+step 11400: train loss 3.0062 (ppl=19.75), val loss 5.2740 (ppl=193.60)
+step 11600: train loss 2.9835 (ppl=19.15), val loss 5.2657 (ppl=188.61)
+step 11800: train loss 2.9579 (ppl=19.68), val loss 5.2194 (ppl=200.78)
+step 12000: train loss 2.9467 (ppl=18.99), val loss 5.2902 (ppl=192.14)
+step 12200: train loss 2.9423 (ppl=18.92), val loss 5.2191 (ppl=198.17)
+step 12400: train loss 2.9346 (ppl=19.16), val loss 5.2611 (ppl=200.90)
+step 12600: train loss 2.8963 (ppl=18.25), val loss 5.2376 (ppl=199.12)
+step 12800: train loss 2.9182 (ppl=18.31), val loss 5.2724 (ppl=196.76)
+step 13000: train loss 2.8936 (ppl=17.87), val loss 5.2968 (ppl=216.15)
+step 13200: train loss 2.8754 (ppl=18.16), val loss 5.3407 (ppl=201.99)
+step 13400: train loss 2.8773 (ppl=18.01), val loss 5.3349 (ppl=213.90)
+step 13600: train loss 2.8519 (ppl=17.29), val loss 5.3595 (ppl=203.09)
+step 13800: train loss 2.8460 (ppl=17.23), val loss 5.3979 (ppl=218.29)
+step 14000: train loss 2.8640 (ppl=16.88), val loss 5.3643 (ppl=221.09)
+step 14200: train loss 2.8203 (ppl=16.72), val loss 5.3533 (ppl=207.99)
+step 14400: train loss 2.8039 (ppl=16.86), val loss 5.3517 (ppl=208.99)
+step 14600: train loss 2.8018 (ppl=16.57), val loss 5.3805 (ppl=218.63)
+step 14800: train loss 2.8096 (ppl=16.26), val loss 5.3631 (ppl=227.13)
+step 15000: train loss 2.7840 (ppl=16.45), val loss 5.4462 (ppl=232.39)
+step 15200: train loss 2.7689 (ppl=15.95), val loss 5.4084 (ppl=220.22)
+step 15400: train loss 2.7661 (ppl=16.30), val loss 5.4253 (ppl=233.78)
+step 15600: train loss 2.7421 (ppl=15.53), val loss 5.4628 (ppl=226.93)
+step 15800: train loss 2.7620 (ppl=15.28), val loss 5.4791 (ppl=234.19)
+step 16000: train loss 2.7205 (ppl=15.63), val loss 5.4578 (ppl=233.36)
+step 16200: train loss 2.7092 (ppl=15.57), val loss 5.4926 (ppl=233.33)
+step 16400: train loss 2.7119 (ppl=15.30), val loss 5.4297 (ppl=232.17)
+step 16600: train loss 2.7150 (ppl=14.81), val loss 5.4878 (ppl=253.52)
+step 16800: train loss 2.7295 (ppl=15.25), val loss 5.5124 (ppl=245.66)
+step 17000: train loss 2.6939 (ppl=14.87), val loss 5.4882 (ppl=246.26)
+step 17200: train loss 2.6900 (ppl=14.67), val loss 5.5229 (ppl=254.00)
+step 17400: train loss 2.6873 (ppl=14.62), val loss 5.4952 (ppl=265.00)
+step 17600: train loss 2.6996 (ppl=14.46), val loss 5.6220 (ppl=255.88)
+step 17800: train loss 2.6466 (ppl=14.28), val loss 5.5109 (ppl=254.47)
+step 18000: train loss 2.6781 (ppl=14.15), val loss 5.5549 (ppl=257.63)
+step 18200: train loss 2.6530 (ppl=14.15), val loss 5.5538 (ppl=259.45)
+step 18400: train loss 2.6506 (ppl=14.19), val loss 5.5804 (ppl=259.87)
+step 18600: train loss 2.6235 (ppl=14.07), val loss 5.5648 (ppl=254.76)
+step 18800: train loss 2.6306 (ppl=13.88), val loss 5.6149 (ppl=261.72)
+step 19000: train loss 2.5946 (ppl=13.35), val loss 5.6331 (ppl=266.35)
+step 19200: train loss 2.6127 (ppl=13.72), val loss 5.6594 (ppl=274.27)
+step 19400: train loss 2.5988 (ppl=13.59), val loss 5.5913 (ppl=264.78)
+step 19600: train loss 2.6087 (ppl=13.87), val loss 5.6062 (ppl=284.20)
+step 19800: train loss 2.6012 (ppl=13.26), val loss 5.6518 (ppl=276.10)
+step 19999: train loss 2.5726 (ppl=12.85), val loss 5.5877 (ppl=274.41)
+
+============================================================
+Training Complete!
+============================================================
+
+============================================================
+PERPLEXITY EVALUATION
+============================================================
+Corpus-Level Perplexity:
+  Train: 13.2746
+  Val:   275.8867
+
+Per-Sequence Perplexity:
+  Train: 17.2443
+  Val:   1372.6171
+============================================================
+
+
+Generating sample text...
+
+Generated Text:
+------------------------------------------------------------
+! what news?
+
+ELBOW:
+Is so?
+
+DUKE VINCENTIO:
+I know no remedy.
+
+Shepherd:
+Not an errand a man that gives me now out
+With those flowers is made up to see
+The issue of their bodies and pastures' wives,
+And neither days to me as long as I,
+Which by the cause of mine opinion: let this trunk I saw
+Be held my master's action, we shall to be
+So schoolily for the boar Friar-like more.
+
+DUKE VINCENTIO:
+
+ANGELO:
+
+MISTRESS OVERDONE:
+Well, I pray, let's be gone with all alone.
+
+PETRUCHIO:
+Sir, I say, Romeo,
+That art not, Romeo; thou love's thy hand,
+And nothing of my heart that thou dost suspect wrong,
+That rends our bow'd up in mine bosom;
+But, to the Capst thou, with thy words speak.
+
+Lady:
+Madam, we may be together, and love as good den.
+Come, come, I come the day of
+the house of Rome, I have heard of you, and
+laboured for a fisting ringly we never
+Still to avoid your accusation, but that he hath
+Reprieve me: it were of me of mine;
+Doth she condemn'd Romeo, and thou not earth,
+POMPEY:
+If I be not, I go, why do not mean;
+But I have made I here were no more, I say,
+But that I may be, you would not be patient.
+
+POLIXENES:
+I was caught him then.
+
+PAULINA:
+How prettily the young and young fellest
+There's my vice? would I have set down their breath?
+
+MONTAGUE:
+YORK:
+
+Nurse thou Romeo, Merciful sovereign!
+
+RIVERS:
+What's love with love?
+
+WARWICK:
+What mischance shall be take truce hangs
+The Tybalt in Ireland, and that thou dost stay;
+Wert thou in thy thought of ill sounds:
+Yea, I but dream on sovereignty and humbly bow
+The oracle is true
+------------------------------------------------------------
