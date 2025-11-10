@@ -180,7 +180,9 @@ optimizer = BiostatisV6(
 > *“BiostatisV6 stabilizes gradient dynamics via hierarchical homeostasis.
 > It consistently improves vision tasks (+2–3%) and small LMs (+24%),
 > while maintaining parity on well-behaved large models (GPT-2).
-> This project was developed as a student-driven exploration into optimizer design, following theoretical norms as closely as possible. Any constructive feedbacks are always welcomed.”*
+> This project was developed as a student-driven exploration into optimizer design, following theoretical norms as closely as possible. V6 wasn’t built to outperform AdamW on a specific dataset. It was built
+> from curiosity, a remix of biological mechanisms and deep learning optimization, crafted from scratch to see what emerges
+> Any constructive feedbacks are always welcomed.”*
 
 Future work:
 
