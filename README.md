@@ -198,6 +198,6 @@ Future work:
   title        = {BiostatisV6: A Biologically-Inspired Optimizer with Hierarchical Homeostasis},
   year         = {2025},
   note         = {Student-led optimizer research project},
-  url          = {https://github.com/hindolroychoudhury/BiostatisV6},
+  url          = {https://github.com/Hindolch/V6-optimizer},
 }
 ```
